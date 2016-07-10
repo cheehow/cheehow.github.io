@@ -112,7 +112,10 @@
                             cursor.continue();
                         }
                     } else {    // all traversed
-                        alert("Key: " + latestResult.key + ", Value: " + latestResult.value);
+					if (latestResult.key)
+                        		alert("Key: " + latestResult.key + ", Value: " + latestResult.value);
+					else
+						alert(keyValue + " couldn't be found in your database!");
                     }
                     
                     };
@@ -141,7 +144,7 @@
     function add() {
         var keyValue = document.getElementById('txtKey').value;
         var valValue = document.getElementById('txtVal').value;
-        var timeValue = new Date().getTime();
+        var timeValue = new Date(new Date().setSeconds(0,0)).getTime();
 
         if (!keyValue || !valValue) {
             alert("Please enter both key and value to be added to the database.");
