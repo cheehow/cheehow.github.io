@@ -9,7 +9,7 @@
 		<script type="text/javascript">
 function readWriteNfc() {
 	//alert('test');
-  if ('nfc' in navigator) {
+/*  if ('nfc' in navigator) {
     navigator.nfc.watch(function (message) {
         consoleLog("NFC message received from URL " + message.url);
         if (message.data[0].recordType === 'empty') {
@@ -27,7 +27,22 @@ function readWriteNfc() {
       .catch(err => consoleLog("Adding watch failed: " + err.name));
   } else {
     consoleLog('NFC API not supported.');
-  }
+  }*/
+	navigator.nfc.watch((message) => {
+	  if (message.records[0].recordType == 'empty') {
+	    navigator.nfc.push({
+	      url: "/custom/path",
+	      records: [{ recordType: "text", data: 'Hello World' }]
+	    });
+	  } else {
+	    console.log('Read message written by ' + message.url);
+	    processMessage(message);
+	  }
+	}).then(() => {
+	  console.log("Added a watch.");
+	}).catch((error) => {
+	  console.log("Adding watch failed: " + error.name);
+	});
 }
 
 function consoleLog(data) {
@@ -36,7 +51,7 @@ function consoleLog(data) {
   alert(data);
 }
 
-function processMessage(message) {
+/*function processMessage(message) {
   message.data.forEach(function (record) {
     if (record.recordType == "string") {
       consoleLog('Data is string: ' + record.data);
@@ -48,6 +63,32 @@ function processMessage(message) {
       processPng(record.data);
     };
   });
+}*/
+			
+function processMessage(message) {
+  for (let record of message.records) {
+    switch (record.recordType) {
+      case "text":
+        consoleLog('Data is text: ' + record.data);
+        break;
+      case "url":
+        consoleLog('Data is URL: ' + record.data);
+        break;
+      case "json":
+        processJSON(record.data);
+        break;
+      case "opaque":
+        if (record.mediaType == 'image/png') {
+          var img = document.createElement("img");
+          img.src = URL.createObjectURL(new Blob([record.data], {type: record.mediaType}));
+          document.body.appendChild(img);
+          img.onload = function() {
+            window.URL.revokeObjectURL(this.src);
+          };
+        }
+        break;
+    }
+  }
 }
 
 function processPng(data) {
