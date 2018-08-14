@@ -2,10 +2,15 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
    <head>
+	   	<script src="hnl.mobileConsole.js"></script>
 		<!-- Define the title of the page -->
 		<title>About Us</title>
 
 		<script type="text/javascript">
+		if (!mobileConsole.status.initialized) {
+            		mobileConsole.init();
+        	}			
+			
 		function readNFC() {
 			if ('nfc' in navigator) {			
 				const options = { mode: "any" };
